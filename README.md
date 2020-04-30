@@ -1,14 +1,13 @@
-# Docker mongodb dumper 
+# Docker mongodb dumper
 
 #### To dump database:
 ```bash
-./dump.sh -h YOUR_HOST
+./dump.sh -c RUNNING_MONGO_CONTAINER_NAME
 ```
 
 There are several additional options:
 ```text
--h (required) -- host name
--p            -- port
+-c (required) -- running mongo container name
 -d            -- database name; if not set - all database will be dumped
 -o            -- additional options for mongodump command; wrap in double quotas all the options
 ```

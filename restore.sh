@@ -4,9 +4,9 @@ help () {
     echo 'There are 4 available options:'
     echo
     echo '-f (required) -- path to file'
-    echo '-h (required) -- host name'
+    echo '-c (required) -- running container name'
     echo '-p            -- port'
-    echo '-o            -- additional options for mongorestore command; wrap in double quotas all the options'
+    echo '-o            -- additional options for mongodump command; wrap in double quotas all the options'
 }
 
 if [ $1 == '--help' ]
@@ -17,15 +17,15 @@ fi
 
 declare -a file_check
 file_check=0
-host_check=0
+container_check=0
 
-while getopts :h:p:f:o: option
+while getopts :c:p:f:o: option
   do
     case "${option}"
         in
-        h)
-            HOST=${OPTARG}
-            host_check=1
+        c)
+            CONTAINER=${OPTARG}
+            container_check=1
             ;;
         p) PORT=${OPTARG};;
         o) OPTIONS=${OPTARG};;
@@ -41,9 +41,9 @@ while getopts :h:p:f:o: option
         esac
 done
 
-if [[ $file_check == 0 || $host_check == 0 ]]
+if [[ $file_check == 0 || $container_check == 0 ]]
 then
-    echo "-f and -h options must be set"
+    echo "-f and -c options must be set"
     help
     exit
 fi
@@ -53,7 +53,7 @@ OPTIONS=${OPTIONS:-""}
 
 echo $FILEPATH
 
-echo $HOST
+echo $CONTAINER
 echo $PORT
 
 if [ -f $FILEPATH ]
@@ -64,7 +64,7 @@ if [ -f $FILEPATH ]
                 exit
         fi
 
-        cat $FILEPATH | docker run --rm -i mongo mongorestore --host $HOST --port $PORT --archive --gzip --drop $OPTIONS
+        cat $FILEPATH | docker exec -i $CONTAINER mongorestore --host localhost --port $PORT --archive --gzip --drop $OPTIONS
     else
         echo "Such file doesn't exists!"
 fi
